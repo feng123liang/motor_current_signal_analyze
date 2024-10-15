@@ -1,17 +1,28 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-data = pd.read_csv("test.csv",header = None).values
-print(data.shape)
-data = data[:,1]
+import argparse
 
-for i in range(1,4):
-    cdata = data[i:len(data):3]
+parser = argparse.ArgumentParser()
+parser.add_argument('-f','--file',type = str, default="test.csv")
+parser.add_argument('-c','--column',type=int,default=3)
+parser.add_argument('-sc','--start_column',type=int,default=1)
+args = parser.parse_args()
+
+data = pd.read_csv(args.file,header = None).values
+print(data.shape)
+data = data[:,-1]
+start_index = args.start_column
+step = args.column
+for i in range(start_index,start_index+step):
+    cdata = data[i:len(data):step]
     # cdata = cdata[1000:2000]
     cdata = cdata * (3.3 / 4096)
     plt.figure(i,figsize=(20,4))
     plt.plot(cdata)
 plt.show()
+
+# 后面想要多线程
 # import threading
 # import time
 # import numpy as np
