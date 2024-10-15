@@ -1,3 +1,0 @@
-/home/pnx/tutorial/light_bar_matching/tutorial01/build/CMakeFiles/lightBarMatching01.dir
-/home/pnx/tutorial/light_bar_matching/tutorial01/build/CMakeFiles/edit_cache.dir
-/home/pnx/tutorial/light_bar_matching/tutorial01/build/CMakeFiles/rebuild_cache.dir
