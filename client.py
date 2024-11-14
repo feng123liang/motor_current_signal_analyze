@@ -3,8 +3,17 @@ import random
 import json
 from paho.mqtt import client as mqtt_client
 import numpy as np
+from enum import Enum, unique
+
+@unique
+class PumpErrno(Enum):
+    HEALTHY = 0
+    BROKEN_ROTOR_BAR = 1
+    STATOR_SHORT = 2
+    BEARING_FAULT = 3
+
 class MQTTClient:
-    def __init__(self, broker='10.5.153.251', port=1883, topic="default", id = 0):
+    def __init__(self, broker='10.5.153.251', port=1883, topic="pump/realtime_power_events", id = 0):
         self.broker = broker
         self.port = port
         self.topic = topic
@@ -16,16 +25,16 @@ class MQTTClient:
         self.sub_time_group = np.arange(1,0,-1/self.sampling_rate)
         self.time_group = None
     def connect_mqtt(self):
-        def on_connect(self,client, userdata, flags, rc):
+        def on_connect(client, userdata, flags, rc):
             if rc == 0:
                 print("Connected to MQTT Broker!")
             else:
-                print("Failed to connect, return code %d\n", rc)
+                print("Failed to connect, return code %d\n" % rc)
 
         try:
             client = mqtt_client.Client(self.client_id)
         except:
-            client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION2, self.client_id)
+            client = mqtt_client.Client(mqtt_client.ClientIdGeneration.CLIENT_ID_V5, self.client_id)
 
         client.on_connect = on_connect
         client.connect(self.broker, self.port)
@@ -43,22 +52,22 @@ class MQTTClient:
         tem = tem[sample_indice]
         print(tem.shape)
         tem = tem.tolist()
-        msg = {'pump_id': f"pump_{pumpid}",
-               'pump_station_id':f"station_{pumpid}",
-               'pump_place':'default',
-                   'time': tem,
-                   'predict_status': predict_status,
-                   'time_domain_data': {'i1':time_domain_data[0],
-                                        'i2':time_domain_data[1],
-                                        'i3':time_domain_data[2],
-                                        'v1':time_domain_data[3],
-                                        'v2':time_domain_data[4],
-                                        'v3':time_domain_data[5],
-                                        },
-                   'fft_domain_data': fft_domian_data
+        msg = {'pump_id': f"test_pump_000{pumpid}",
+               'pump_station_id':f"test_station_0001",
+               'pump_place':'Location_D',
+                'timestamps': tem,
+                'predict_status': predict_status,
+                'time_domain_data': {'i1':time_domain_data[0],
+                                    'i2':time_domain_data[1],
+                                    'i3':time_domain_data[2],
+                                    'v1':time_domain_data[3],
+                                    'v2':time_domain_data[4],
+                                    'v3':time_domain_data[5],
+                                    },
+                'fft_domain_data': fft_domian_data
                 }
         # print()
-        print(msg)
+        # print(msg)
         msg_str = json.dumps(msg)
         # print(msg_str)
         # result = self.client.publish(f'topic/{pumpid}', msg_str)
@@ -67,7 +76,7 @@ class MQTTClient:
         # print(result)
         status = 0 # ?
         if status == 0:
-            print(f"Send success to topic `topic/{pumpid}`")
+            print(f"{pumpid} Send success to topic `{self.topic}`")
         else:
             print(f"Failed to send message to topic {self.topic}")
         # msg_count += 1

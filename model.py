@@ -1,9 +1,27 @@
 from torch import nn
 import torch
+# %%
+import csv
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import os
+from sklearn.utils import shuffle # shuffle can shffule two array with the same random seed to maintain the mapping relation
+import torch.utils.data as Data
+import scipy.io as sio
 
-class Model(nn.Module):
+import scipy.signal as signal
+from scipy.signal import firwin, lfilter 
+
+from scipy.fftpack import fft, ifft
+
+import queue
+import model
+import torch
+
+class Modelmp(nn.Module):
     def __init__(self):
-        super(Model, self).__init__()
+        super(Modelmp, self).__init__()
         self.model_time = nn.Sequential(
             nn.Conv2d(in_channels=1,out_channels=5,kernel_size=9,padding=4), 
             nn.BatchNorm2d(5,1e-6),
