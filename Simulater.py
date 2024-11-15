@@ -13,7 +13,7 @@ class Simulater():
         self.data = 0
         # self.lock = threading.Lock()
         # self.cv = threading.Condition()
-        # self.groups = [[],[]]
+        # self.groups = [[],[]] 
         # self.index = 1
         self.pump_id = pump_id
         self.index = 0
@@ -45,18 +45,17 @@ class Simulater():
     def simple_update(self):
         if(self.index + self.one_step >= self.highindex):
             sub = self.index + self.one_step - self.highindex
-            tem = self.datas[0,self.index:].copy() 
-            tem = np.hstack((tem,self.datas[0,:sub].copy()))
-            transfer = self.datas[:,self.index:]
-            transfer = np.hstack((transfer,self.datas[:,:sub]))
+            # tem = self.datas[0,self.index:].copy() 
+            tem = np.hstack((self.datas[0,self.index:],self.datas[0,:sub]))
+            transfer = np.hstack((self.datas[:,self.index:],self.datas[:,:sub]))
             # print(transfer.shape)
             self.index = sub
         else:
-            tem = self.datas[0,self.index:self.index+self.one_step].copy()
+            tem = self.datas[0,self.index:self.index+self.one_step]
             transfer = self.datas[:,self.index:self.index+self.one_step]
             self.index += self.one_step
 
-        self._preprocess.get_batch(tem)
+        self._preprocess.process_data(tem)
         output = self._preprocess.fetch_data()
         pre_lab = torch.argmax(output,dim = 1)
         self.mqtt.my_publish(self.pump_id,None,

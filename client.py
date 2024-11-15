@@ -13,7 +13,7 @@ class PumpErrno(Enum):
     BEARING_FAULT = 3
 
 class MQTTClient:
-    def __init__(self, broker='10.5.153.251', port=1883, topic="pump/realtime_power_events", id = 0):
+    def __init__(self, broker='10.5.153.251', port=1883, topic="pump/realtime_power_events", id = 0, time_offset = 3600*8):
         self.broker = broker
         self.port = port
         self.topic = topic
@@ -23,6 +23,7 @@ class MQTTClient:
         self.current_time = 0
         self.sampling_rate = 20000
         self.sub_time_group = np.arange(1,0,-1/self.sampling_rate)
+        self.sub_time_group -= time_offset
         self.time_group = None
     def connect_mqtt(self):
         def on_connect(client, userdata, flags, rc):
